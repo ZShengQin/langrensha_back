@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,13 +24,20 @@ public class Room {
 
     private String roleString;
 
-    public Room(){}
+    private Integer numCurrent;
+
+
+    //default constructor
+    public Room(){
+        this.numCurrent = 1;
+    }
 
     //房主创建房间
     public Room(Integer roomId, User roomCreator, String roleString) {
         this.roomId = roomId;
         this.userList.add(roomCreator);
         this.roleString = roleString;
+        this.numCurrent = 1;
     }
 
     //有人加入已经创建的房间

@@ -55,12 +55,9 @@ public class RoomSeviceImpl implements RoomService{
 
         //存在输入的房间号
         userRepository.save(user);
-        Room room = new Room();
-        room.setRoomId(roomId);
-        Set<User> userList = roomRepository.findOne(roomId).getUserList();
-        userList.add(user);
-        room.setUserList(userList);
-
+        Room room = roomRepository.findOne(roomId);
+        room.getUserList().add(user);
+        room.setNumCurrent(room.getNumCurrent() + 1);
         roomRepository.save(room);
         return room;
     }

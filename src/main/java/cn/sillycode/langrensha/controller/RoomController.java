@@ -30,7 +30,8 @@ public class RoomController {
 
     //输入的roomId有误，返回一个roomId == null的Room对象
     @GetMapping(value = "/room/{roomId}")
-    public Room joinRoom(@PathVariable("roomId") Integer roomId, User user){
+    public Room joinRoom(@PathVariable("roomId") Integer roomId,
+                         User user){
         return roomService.joinRoom(roomId, user);
     }
 
