@@ -29,7 +29,6 @@ public class Room {
 
     //default constructor
     public Room(){
-        this.numCurrent = 1;
     }
 
     //房主创建房间

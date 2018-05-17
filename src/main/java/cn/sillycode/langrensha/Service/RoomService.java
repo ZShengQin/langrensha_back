@@ -16,4 +16,6 @@ public interface RoomService {
     Room joinRoom(Integer roomId, User user);
 
     Boolean deleteRoom(Integer roomId);
+
+    Boolean findone(Integer roomId);
 }

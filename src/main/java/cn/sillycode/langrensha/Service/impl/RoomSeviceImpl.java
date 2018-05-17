@@ -5,6 +5,7 @@ import cn.sillycode.langrensha.entity.Room;
 import cn.sillycode.langrensha.entity.User;
 import cn.sillycode.langrensha.repository.RoomRepository;
 import cn.sillycode.langrensha.repository.UserRepository;
+import cn.sillycode.langrensha.utility.HttpUtil;
 import cn.sillycode.langrensha.utility.RoomUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,26 @@ public class RoomSeviceImpl implements RoomService{
     RoomRepository roomRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    HttpUtil httpClientService;
 
     /**
      *
-     * @param user : 传递一个游戏房间创建者的User对象
-     * @param roleString
-     * @return: 生成roomId后返回Room对象
+     * @param user 传递一个游戏房间创建者的User对象
+     * @param roleString 用于分配角色的字符串
+     * @return 生成roomId后返回Room对象
      */
     @Override
     public Room createRoom(User user, String roleString) {
+
+        String appid = "wx52e0d1182420144d";
+        String appsecret = "65ff4d537bdaab8f485775f74f58a675";
+        String grant_type = "authorization_code";
+        String requestUrl = "https://api.weixin.qq.com/sns/jscode2session";
+        String params = "appid=" + appid + "&secret=" + appsecret +
+                "&js_code=" + user.getCode() + "&grant_type=" + grant_type;
+        System.out.println("openid = " + HttpUtil.client(requestUrl, params));
+
         userRepository.save(user);
         Integer roomId = RoomUtility.genRoomId();
         Room room = new Room(roomId, user, roleString);
@@ -44,19 +56,21 @@ public class RoomSeviceImpl implements RoomService{
      *
      * @param roomId: 通过roomId查找已经创建的房间
      * @param user: 将user加入房间号所属的Room
-     * @return: 返回加入了user的Room对象
+     * @return 返回加入了user的Room对象
      */
     @Override
     public Room joinRoom(Integer roomId, User user) {
-        //输入房间号有误,返回roomId为null
-        if(roomRepository.findOne(roomId) == null){
-            return new Room();
-        }
 
         //存在输入的房间号
-        userRepository.save(user);
         Room room = roomRepository.findOne(roomId);
-        room.getUserList().add(user);
+        Set<User> userList = room.getUserList();
+
+        //该用户已经加入当前房间
+        if(userList.contains(user)){
+            return room;
+        }
+        userRepository.save(user);
+        userList.add(user);
         room.setNumCurrent(room.getNumCurrent() + 1);
         roomRepository.save(room);
         return room;
@@ -64,8 +78,8 @@ public class RoomSeviceImpl implements RoomService{
 
     /**
      * 创建者离开创建页面，房间销毁
-     * @param roomId
-     * @return
+     * @param roomId 需要销毁的房间id
+     * @return 是否销毁成功
      */
     @Override
     public Boolean deleteRoom(Integer roomId) {
@@ -74,6 +88,14 @@ public class RoomSeviceImpl implements RoomService{
             return false;
         }
         roomRepository.delete(roomId);
+        return true;
+    }
+
+    @Override
+    public Boolean findone(Integer roomId) {
+        if(roomRepository.findOne(roomId) == null){
+            return false;
+        }
         return true;
     }
 }

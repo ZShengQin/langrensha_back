@@ -1,12 +1,12 @@
 server:
-  port: 80
+  port: 550
 
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/langrensha
-    username: qin
-    password: 123456
+    url: jdbc:mysql://127.0.0.1/langrensha
+    username: lrsAdmin
+    password: lovelangrensha
   jpa:
     hibernate:
       ddl-auto: update
